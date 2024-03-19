@@ -19,43 +19,66 @@ class TaskService {
     private lateinit var mongoTemplate: MongoTemplate
 
     fun getAllTasks(): List<Task> {
-        return taskRepository.findAll()
+        return try {
+            taskRepository.findAll()
+        } catch (e: Exception) {
+            // Log the exception or handle it appropriately
+            emptyList() // Return an empty list or handle the error in some other way
+        }
     }
 
     fun getTaskByName(name: String): Optional<Task> {
-        return taskRepository.getTaskByName(name)
+        return try {
+            taskRepository.getTaskByName(name)
+        } catch (e: Exception) {
+            // Log the exception or handle it appropriately
+            Optional.empty() // Return an empty Optional or handle the error in some other way
+        }
     }
 
     fun getTaskById(id: ObjectId): Optional<Task> {
-        return taskRepository.getTaskById(id)
+        return try {
+            taskRepository.getTaskById(id)
+        } catch (e: Exception) {
+            // Log the exception or handle it appropriately
+            Optional.empty() // Return an empty Optional or handle the error in some other way
+        }
     }
 
     fun createTask(name: String): Task {
-        val newTask = taskRepository.insert(Task(name = name, status = "To Do"))
-
-        return newTask
+        return try {
+            val newTask = taskRepository.insert(Task(name = name, status = "To Do"))
+            newTask
+        } catch (e: Exception) {
+            // Log the exception or handle it appropriately
+            // You may want to throw a custom exception here or handle the error in some other way
+            Task() // Return an empty Task object or handle the error in some other way
+        }
     }
 
     fun deleteTask(id: ObjectId) {
-        val optionalTask: Optional<Task> = taskRepository.getTaskById(id)
-
-        if (optionalTask.isPresent) {
-            val task: Task = optionalTask.get()
-            taskRepository.delete(task)
+        try {
+            val optionalTask: Optional<Task> = taskRepository.getTaskById(id)
+            if (optionalTask.isPresent) {
+                val task: Task = optionalTask.get()
+                taskRepository.delete(task)
+            }
+        } catch (e: Exception) {
+            // Log the exception or handle it appropriately
         }
     }
 
     fun editTask(id: ObjectId, task: Task) {
-        val task: Task? = taskRepository.getTaskById(id).orElse(null)
-
-        if (task != null) {
-            if (task.name != null) {
-                task.name = task.name
+        try {
+            val existingTask: Task? = taskRepository.getTaskById(id).orElse(null)
+            if (existingTask != null) {
+                // Update task properties if necessary
+                existingTask.name = task.name ?: existingTask.name
+                existingTask.status = task.status ?: existingTask.status
+                taskRepository.save(existingTask)
             }
-            if (task.status != null) {
-                task.status = task.status
-            }
-            taskRepository.save(task)
+        } catch (e: Exception) {
+            // Log the exception or handle it appropriately
         }
     }
 }

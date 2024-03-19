@@ -13,53 +13,104 @@ import java.util.*
 
 @RestController
 @RequestMapping("/api/v1/tasks")
+@CrossOrigin(origins = ["http://localhost:3000"])
 class TaskController {
     @Autowired
     private lateinit var taskService: TaskService
 
     @GetMapping("/all")
     fun getAll(): ResponseEntity<List<Task>> {
-        return ResponseEntity<List<Task>>(taskService.getAllTasks(), HttpStatus.OK)
+        return try {
+            val tasks = taskService.getAllTasks()
+
+            if (tasks.isNotEmpty())
+                ResponseEntity.ok(tasks)
+            else
+                ResponseEntity.notFound().build()
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        }
     }
 
     @GetMapping("/name/{name}")
-    fun getMovieByName(@PathVariable name: String?): ResponseEntity<Optional<Task>> {
-        return ResponseEntity<Optional<Task>>(name?.let { taskService.getTaskByName(it) }, HttpStatus.OK)
+    fun getTaskByName(@PathVariable name: String?): ResponseEntity<Optional<Task>> {
+        return try {
+            val task = name?.let { taskService.getTaskByName(it) }
+
+            if (task?.isPresent == true)
+                ResponseEntity.ok(task)
+            else
+                ResponseEntity.notFound().build()
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        }
     }
 
     @GetMapping("/{id}")
-    fun getMovieByName(@PathVariable id: ObjectId?): ResponseEntity<Optional<Task>> {
-        return ResponseEntity<Optional<Task>>(id?.let { taskService.getTaskById(it) }, HttpStatus.OK)
+    fun getTaskById(@PathVariable id: String?): ResponseEntity<Optional<Task>> {
+        return try {
+            val taskId = id?.let { ObjectId(it) }
+            val task = taskId?.let { taskService.getTaskById(it) }
+
+            if (task?.isPresent == true)
+                ResponseEntity.ok(task)
+            else
+                ResponseEntity.notFound().build()
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        }
     }
 
     @PostMapping
     fun createTask(@RequestBody payload: Map<String, String>): ResponseEntity<Task> {
-        val newTask = payload.get("name")?.let { taskService.createTask(it) }
+        return try {
+            val name = payload["name"]
 
-        return ResponseEntity<Task>(newTask, HttpStatus.CREATED);
+            if ((name?.length ?: 0) >= 3) {
+                val newTask = name?.let { taskService.createTask(it) }
+                ResponseEntity.status(HttpStatus.CREATED).body(newTask)
+            }
+            else
+                ResponseEntity.badRequest().build()
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        }
     }
 
     @DeleteMapping("/{id}")
     fun deleteTask(@PathVariable id: String?): ResponseEntity<Unit> {
-        if (id != null && ObjectId.isValid(id)) {
-            val objectId = ObjectId(id)
-            if (taskService.getTaskById(objectId).isPresent) {
-                taskService.deleteTask(objectId)
-                return ResponseEntity.ok().build()
+        return try {
+            if (id != null && ObjectId.isValid(id)) {
+                val objectId = ObjectId(id)
+                if (taskService.getTaskById(objectId).isPresent) {
+                    taskService.deleteTask(objectId)
+                    return ResponseEntity.ok().build()
+                }
+                    ResponseEntity.badRequest().build()
             }
+            else
+                ResponseEntity.badRequest().build()
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
         }
-        return ResponseEntity.badRequest().build()
     }
 
     @PutMapping("/{id}")
     fun editTask(@PathVariable id: String?, @RequestBody task: Task): ResponseEntity<Unit> {
-        if (id != null && ObjectId.isValid(id)) {
-            val objectId = ObjectId(id)
-            if (taskService.getTaskById(objectId).isPresent) {
-                taskService.editTask(objectId, task)
-                return ResponseEntity.ok().build()
+        return try {
+            if (id != null && ObjectId.isValid(id)) {
+                val objectId = ObjectId(id)
+                if (taskService.getTaskById(objectId).isPresent) {
+                    taskService.editTask(objectId, task)
+                    return ResponseEntity.ok().build()
+                }
+                else
+                    return ResponseEntity.badRequest().build()
             }
+            else
+                ResponseEntity.badRequest().build()
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
         }
-        return ResponseEntity.badRequest().build()
     }
 }
