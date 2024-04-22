@@ -2,6 +2,7 @@ package dev.luis.TimeToDo.Controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.luis.TimeToDo.Model.Task
+import dev.luis.TimeToDo.Model.TaskStatus
 import dev.luis.TimeToDo.Service.TaskService
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
@@ -65,13 +66,15 @@ class TaskController {
     fun createTask(@RequestBody payload: Map<String, String>): ResponseEntity<Task> {
         return try {
             val name = payload["name"]
+            val status = payload["status"]?.let { TaskStatus.valueOf(it.toUpperCase()) }
+            val description = payload["description"]
 
-            if ((name?.length ?: 0) >= 3) {
-                val newTask = name?.let { taskService.createTask(it) }
+            if ((name?.length ?: 0) >= 3 && status != null) {
+                val newTask = name?.let { taskService.createTask(it, status, description ?: "") }
                 ResponseEntity.status(HttpStatus.CREATED).body(newTask)
-            }
-            else
+            } else {
                 ResponseEntity.badRequest().build()
+            }
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
         }

@@ -18,11 +18,13 @@ class Task {
     @Id
     var id: ObjectId? = null
     var name: String? = null
-    var status: String? = null
+    var status: TaskStatus? = null
+    var description: String? = null
 
-    constructor(name: String, status: String) : this() {
+    constructor(name: String, status: TaskStatus, description: String) : this() {
         this.name = name
         this.status = status
+        this.description = description
     }
 
     constructor()
