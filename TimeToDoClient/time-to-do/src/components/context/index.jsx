@@ -5,7 +5,7 @@ import { createContext } from "react";
 export const GlobalContext = createContext();
 
 export default function GlobalState({ children }) {
-    const [formData, setFormData] = useState({ name: "", status: "" })
+    const [formData, setFormData] = useState({ name: "", status: "", description: "" })
     const [todoList, setTodoList] = useState([])
     const [loading, setLoading] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
