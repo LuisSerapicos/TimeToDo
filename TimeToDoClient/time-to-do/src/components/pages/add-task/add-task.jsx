@@ -1,11 +1,11 @@
-import { useContext, useState } from "react"
+import { useContext } from "react"
 import { GlobalContext } from "../../context"
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 
 export default function AddTask() {
-    const { formData, setFormData, loading, setLoading } = useContext(GlobalContext)
+    const { formData, setFormData, setLoading } = useContext(GlobalContext)
     const navigate = useNavigate()
 
     async function handleSaveTask() {

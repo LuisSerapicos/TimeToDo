@@ -9,9 +9,11 @@ export default function GlobalState({ children }) {
     const [todoList, setTodoList] = useState([])
     const [loading, setLoading] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [currentTodo, setCurrentTodo] = useState(null);
 
     return (
-        <GlobalContext.Provider value={ {formData, setFormData, todoList, setTodoList, loading, setLoading, isEdit, setIsEdit} }>
+        <GlobalContext.Provider value={ {formData, setFormData, todoList, setTodoList, loading, setLoading, isEdit, setIsEdit, modalIsOpen, setModalIsOpen, currentTodo, setCurrentTodo} }>
         {children}
         </GlobalContext.Provider>
     );

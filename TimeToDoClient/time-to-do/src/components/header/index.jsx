@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 import { GlobalContext } from "../context";
 import { useContext } from "react";
 
-
-export default function Header() {
+export default function Header({ img }) {
     const { setFormData } = useContext(GlobalContext)
 
     function handleClick() {
@@ -11,10 +10,10 @@ export default function Header() {
     }
 
     return (
-        <div className="flex bg-blue-500 text-white p-4 mb-4">
+        <div className="flex bg-blue-500 text-white p-4 mb-4 items-center">
             <h3 className="">
                 <Link onClick={handleClick} to={"/"}>
-                    TimeToDo
+                    <img src={img} alt="Website logo" width={"200px"} height={"50px"}/>
                 </Link>
             </h3>
             <ul className="flex gap-[20px] w-full justify-end">
