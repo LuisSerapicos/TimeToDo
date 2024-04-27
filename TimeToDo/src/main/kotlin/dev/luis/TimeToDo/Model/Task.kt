@@ -16,7 +16,7 @@ import java.util.*
 @NoArgsConstructor
 class Task {
     @Id
-    var id: ObjectId? = null
+    var id: String? = ObjectId().toHexString()
     var name: String? = null
     var status: TaskStatus? = null
     var description: String? = null

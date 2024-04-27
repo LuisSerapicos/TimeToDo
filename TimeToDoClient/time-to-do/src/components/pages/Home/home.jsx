@@ -8,7 +8,7 @@ import Modal from "react-modal"
 
 export default function Home() {
     const { todoList, setTodoList, loading, setLoading, modalIsOpen, setModalIsOpen, setCurrentTodo } = useContext(GlobalContext)
-    //const navigate = useNavigate()
+    const navigate = useNavigate()
     
 
     async function fetchTodoList() {
@@ -38,6 +38,27 @@ export default function Home() {
         console.log(currentTodo.description)
         setCurrentTodo(currentTodo);
         setModalIsOpen(true);
+    }
+
+    function handleEdit(currentTodo) {
+        navigate("/add-task", { state: { currentTodo } })
+    }
+
+    async function handleDelete(id) {
+        try {
+            const response = await axios.delete(`http://localhost:8080/api/v1/tasks/${id}`)
+
+            if(response?.status === 200) {
+                fetchTodoList()
+            }
+            else {
+                setLoading(false)
+                console.log("Delete operation failed with status code:", response.status);
+            }
+        } catch(err) {
+            console.log(err)
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
@@ -71,8 +92,8 @@ export default function Home() {
                                             <p className="text-left text-white">{todo.status}</p>
                                         </div>
                                         <div className="grid gap-2">
-                                            <button className="bg-yellow-500 text-white p-2 rounded" onClick={(e) => {e.stopPropagation(); console.log('Edit')}}>Edit</button>
-                                            <button className="bg-red-500 text-white p-2 rounded" onClick={(e) => {e.stopPropagation(); console.log('Delete')}}>Delete</button>
+                                            <button className="bg-yellow-500 text-white p-2 rounded" onClick={(e) => {e.stopPropagation(); handleEdit(todo);}}>Edit</button>
+                                            <button className="bg-red-500 text-white p-2 rounded" onClick={(e) => {e.stopPropagation(); handleDelete(todo.id);}}>Delete</button>
                                         </div>
                                     </div>
                                 )
