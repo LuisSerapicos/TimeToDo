@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class TaskService {
-    @Autowired
-    private lateinit var taskRepository: TaskRepository
+class TaskService(@Autowired private val taskRepository: TaskRepository) {
 
     fun getAllTasks(): List<Task> {
         return try {

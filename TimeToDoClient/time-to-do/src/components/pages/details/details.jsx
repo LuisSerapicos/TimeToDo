@@ -15,10 +15,10 @@ export default function Details() {
             content: {display: "flex", flexDirection: "column", justifyContent: "start", alignItems: "center", position: "absolute", top: "10vh", left: "50%", transform: "translate(-50%, 0%)", maxHeight: "50vh", maxWidth: "700px", backgroundColor: "#5484d1"}}}>
                 <button className="self-end text-white mr-3" onClick={closeModal}>X</button>
                 <h1 className="mt-5 mb-10 text-white text-3xl font-bold">Task Details</h1>
-                <div className="text-left">
+                <div className="text-left overflow-auto max-w-80">
                     <p className="mb-5 text-white"><span className="font-bold">Task: </span>{currentTodo ? currentTodo.name : ''}</p>
                     <p className="mb-5 text-white"><span className="font-bold">Status: </span>{currentTodo ? currentTodo.status : ''}</p>
-                    <p className="mb-5 text-white"><span className="font-bold">Description: </span> {currentTodo ? currentTodo.description : ''}</p>
+                    <p className="mb-5 text-white w-30 break-words"><span className="font-bold">Description: </span> {currentTodo ? currentTodo.description : ''}</p>
                 </div>
             </Modal>
         </div>

@@ -69,7 +69,8 @@ class TaskController {
             val status = payload["status"]?.let { TaskStatus.valueOf(it.toUpperCase()) }
             val description = payload["description"]
 
-            if ((name?.length ?: 0) >= 3 && status != null) {
+            if ((name?.length ?: 0) >= 3 && (name?.length ?: 0) <= 25 && status != null &&
+                (description?.length ?: 0) >= 3 && (description?.length ?: 0) <= 150) {
                 val newTask = name?.let { taskService.createTask(it, status, description ?: "") }
                 ResponseEntity.status(HttpStatus.CREATED).body(newTask)
             } else {
@@ -103,7 +104,9 @@ class TaskController {
         return try {
             if (id != null && ObjectId.isValid(id)) {
                 val objectId = ObjectId(id)
-                if (taskService.getTaskById(objectId).isPresent) {
+                if (taskService.getTaskById(objectId).isPresent && (task.name?.length ?: 0) >= 3 &&
+                    (task.name?.length?: 0) <= 25 && task.status != null && (task.description?.length ?: 0) >= 3 &&
+                    (task.description?.length?: 0) <= 150) {
                     taskService.editTask(objectId, task)
                     return ResponseEntity.ok().build()
                 }
