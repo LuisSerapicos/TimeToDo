@@ -5,12 +5,19 @@ import axios from 'axios';
 
 
 export default function AddTask() {
-    const { formData, setFormData, setLoading, isEdit, setIsEdit } = useContext(GlobalContext)
+    const { formData, setFormData, setLoading, isEdit, setIsEdit, formErrors, setFormErrors } = useContext(GlobalContext)
     const navigate = useNavigate()
     const location = useLocation()
 
     async function handleSaveTask() {
         setLoading(true);
+
+        const errors = validateFormData(formData)
+        if (Object.keys(errors).length > 0) {
+            setFormErrors(errors)
+            setLoading(false)
+            return
+        }
 
         try {
             const response = !isEdit ? await axios.post('http://localhost:8080/api/v1/tasks', {
@@ -45,6 +52,22 @@ export default function AddTask() {
         navigate('/')
     }
 
+    function validateFormData(data) {
+        let errors = {}
+
+        if (data.name.length < 3) {
+            errors.name = 'Task Name should have at least 3 characters'
+        }
+        if (data.description.length < 3) {
+            errors.description = 'Task Description should have at least 3 characters'
+        }
+        if (data.status === "") {
+            errors.status = 'Task Status is required'
+        }
+        console.log(errors)
+        return errors
+    }
+
     useEffect(() => {
         if (location.state) {
             const { currentTodo } = location.state
@@ -56,7 +79,9 @@ export default function AddTask() {
                 description: currentTodo.description
             })
         }
+        setFormErrors({})
     }, [location])
+    
 
     
     return (
@@ -67,15 +92,18 @@ export default function AddTask() {
                 }
             </h2>
             <div className="flex flex-col m-4">
-                <input type="text" placeholder="Task Name" className="bg-blue-100 border border-gray-300 p-2 my-2 rounded-lg" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
-                <select className="bg-blue-100 border border-gray-300 p-2 my-2 rounded-lg" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+                <input type="text" placeholder="Task Name" className={`bg-blue-100 border ${formErrors.name ? 'border-red-500' : 'border-gray-300'} p-2 my-2 rounded-lg`} value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                {formErrors.name && <p className="text-red-500 text-sm text-left">{formErrors.name}</p>}
+                <select className={`bg-blue-100 border ${formErrors.status ? 'border-red-500' : 'border-gray-300'} p-2 my-2 rounded-lg`} value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
                     <option value="">Select the status</option>
                     <option value="TODO">To Do</option>
                     <option value="DOING">Doing</option>
                     <option value="DONE">Done</option>
                 </select>
-                <input type="text" placeholder="Task Description" className="bg-blue-100 border border-gray-300 p-2 my-2 rounded-lg" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
-                <div className="flex w-full justify-between">
+                {formErrors.status && <p className="text-red-500 text-sm text-left">{formErrors.status}</p>}
+                <input type="text" placeholder="Task Description" className={`bg-blue-100 border ${formErrors.description ? 'border-red-500' : 'border-gray-300'} p-2 my-2 rounded-lg`} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+                {formErrors.description && <p className="text-red-500 text-sm text-left">{formErrors.description}</p>}
+                <div className="flex w-full justify-between mt-3">
                     <button className="w-full mr-1 bg-blue-500 text-white p-2 rounded-lg" onClick={handleSaveTask}>
                         {
                             isEdit ? "Edit Task" : "Add Task"

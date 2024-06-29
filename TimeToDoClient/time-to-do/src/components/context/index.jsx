@@ -11,9 +11,10 @@ export default function GlobalState({ children }) {
     const [isEdit, setIsEdit] = useState(false)
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [currentTodo, setCurrentTodo] = useState(null);
+    const [formErrors, setFormErrors] = useState({})
 
     return (
-        <GlobalContext.Provider value={ {formData, setFormData, todoList, setTodoList, loading, setLoading, isEdit, setIsEdit, modalIsOpen, setModalIsOpen, currentTodo, setCurrentTodo} }>
+        <GlobalContext.Provider value={ {formData, setFormData, todoList, setTodoList, loading, setLoading, isEdit, setIsEdit, modalIsOpen, setModalIsOpen, currentTodo, setCurrentTodo, formErrors, setFormErrors} }>
         {children}
         </GlobalContext.Provider>
     );
